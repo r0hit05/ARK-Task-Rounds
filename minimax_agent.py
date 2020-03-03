@@ -28,7 +28,7 @@ def minimax(board,is_max):
                 old_state = [board,mark]
                 new_board,new_mark = after_action_state(old_state,i)
                 #print(new_board)
-                currval = minimax(new_board,new_mark)
+                currval = minimax(new_board,False)
                 #print(currval)
                 if maxval<currval:
                     maxval = currval
@@ -45,7 +45,7 @@ def minimax(board,is_max):
                 #print(new_state[0])
                 new_board = new_state[0]
                 new_mark = new_state[1]
-                currval = minimax(new_board,new_mark)
+                currval = minimax(new_board,False)
                 #print(currval,mark)
                 if minval>currval:
                     minval = currval
