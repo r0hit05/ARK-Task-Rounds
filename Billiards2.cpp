@@ -128,13 +128,13 @@ int main()
   {
     if(i == cue)
       {
-        cout<<i<<" "<<mcc[i]<<endl;
+        //cout<<i<<" "<<mcc[i]<<endl;
         circle(newimg,mcc[i],radius,Scalar(0,0,255),-1);
         v[i]=1;
       }
     else
     {
-      cout<<i<<" "<<mcc[i]<<endl;
+      //cout<<i<<" "<<mcc[i]<<endl;
       circle(newimg,mcc[i],radius,Scalar(255,255,255),-1);
     }
   }
@@ -142,8 +142,8 @@ int main()
   //finding line of motion
   float slope = (float)(maxy-miny)/(maxx-minx);
   float theta = atan(slope);
-  int coll = 0,col1;
-  //cout<<slope<<" "<<flag<<" "<<cos(theta)<<" "<<sin(theta)<< endl;
+  int coll = 0,col1,slopeflag=0;
+  cout<<slope<<" "<<flag<<" "<<cos(theta)<<" "<<sin(theta)<< endl;
   // circle(newimg,Point(0+radius,0+radius),radius,Scalar(0,0,255),-1);
   // circle(newimg,Point(0+radius,rows-radius),radius,Scalar(0,0,255),-1);
   // circle(newimg,Point(cols-radius,0+radius),radius,Scalar(0,0,255),-1);
@@ -164,7 +164,7 @@ int main()
       }
     }
     float x,y;
-    if(slope<0)
+    if(slope<0 && slopeflag==0)
     {
       if(flag==1)
       {
@@ -175,23 +175,31 @@ int main()
       {
         x = x2 - i*cos(theta);
         y = y2 - i*sin(theta);
+      }
+    }
+    else if(slope>0 && slopeflag==0)
+    {
+      if(flag==1)
+      {
+        x = x2 - i*cos(theta);
+        y = y2 - i*sin(theta);
+      }
+      else
+      {
+        x = x2 + i*cos(theta);
+        y = y2 + i*sin(theta);
       }
     }
     else
     {
       if(flag==1)
-      {
-        x = x2 + i*cos(theta);
-        y = y2 + i*sin(theta);
-      }
+        y = y2 + i;
       else
-      {
-        x = x2 - i*cos(theta);
-        y = y2 - i*sin(theta);
-      }
+        y = y2 - i;
     }
     Point p(x,y);
     //cout<<p<<endl;
+    // line(newimg,)
     mcc[cue]=p;
     for(int i=0;i<mcc.size();i++)
     {
@@ -205,7 +213,7 @@ int main()
     int min = sqrt(rows*rows + cols*cols);
     if(x<=radius+1 || x>=cols-radius-1)
     {
-      i=0;
+      i=1;
       x2=x;
       y2=y;
       theta = -theta;
@@ -217,7 +225,7 @@ int main()
     }
     else if(y<=radius+1 || y>=rows-radius-1)
     {
-      i=0;
+      i=1;
       x2=x;
       y2=y;
       theta = CV_PI - theta;
@@ -238,14 +246,33 @@ int main()
           circle(newimg,p,radius,Scalar(255,255,255),-1);
           v[cue]=0;
           // mcc[cue]=p;
+          if(mcc[c].y<mcc[cue].y && mcc[c].x>mcc[cue].x)
+            {
+              if(flag==1)
+                flag=2;
+              else
+                flag=1;
+            }
           cue = c;
           v[cue]=1;
           x2 = mcc[cue].x;
           y2 = mcc[cue].y;
+          if(x2==p.x)
+            slopeflag=1;
           slope=(float)(y2-p.y)/(x2-p.x);
+          //if(slope)
           theta = atan(slope);
-          cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<" "<<v[3]<<" "<<cue<<endl;
-          i=0;
+          //cout<<slope<<" "<<flag<<" "<<theta<<" "<<cos(theta)<<" "<<sin(theta)<<endl;
+          // if(slope*slopetemp<0)
+          // {
+          //   if(flag==1)
+          //   flag=2;
+          //   else
+          //   flag=1;
+          // }
+          //cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<" "<<v[3]<<" "<<cue<<endl<<endl;
+          cout<<"Collision "<<coll<<endl;
+          i=2;
           break;
         }
       }
@@ -253,8 +280,15 @@ int main()
     }
     namedWindow("Output",0);
     imshow("Output",newimg);
-    waitKey(5);
+    waitKey(3);
   }
+  for(int i=0;i<mcc.size();i++)
+  {
+    cout<<mcc[i]<<" ";
+  }
+  cout<<endl;
+  cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<" "<<v[3]<<" "<<cue<<endl;
+
   namedWindow("Output",0);
   imshow("Output",newimg);
   waitKey(0);
